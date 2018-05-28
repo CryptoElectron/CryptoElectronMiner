@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("CryptoElectronMiner")]
+[assembly: AssemblyTitle("MinerGUI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CryptoElectronMiner")]
+[assembly: AssemblyProduct("MinerGUI")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID служит для идентификации библиотеки типов, если этот проект будет видимым для COM
-[assembly: Guid("19e772bc-b72c-436d-94b4-2e0f4dd4db64")]
+[assembly: Guid("760c1359-0f19-4a85-8840-b9db3d3966a5")]
 
 // Сведения о версии сборки состоят из следующих четырех значений:
 //

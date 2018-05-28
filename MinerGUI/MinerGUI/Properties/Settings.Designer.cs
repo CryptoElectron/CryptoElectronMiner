@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace CryptoElectronMiner.Properties
+namespace MinerGUI.Properties
 {
 
 
