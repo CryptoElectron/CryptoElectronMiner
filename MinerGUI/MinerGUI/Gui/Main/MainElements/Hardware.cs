@@ -10,6 +10,8 @@ namespace MinerGUI.Gui.Main.MainElements
 {
     class Hardware : FrameContent
     {
+        private bool active;
+
         private FramedEventHandler BundlesLoaded;
         private FramedEventHandler BundleStatusChanged;
         private FramedEventHandler BundleStatusChangedHidden;
@@ -258,10 +260,11 @@ namespace MinerGUI.Gui.Main.MainElements
         public override void Activate(FrameForm form, Graphics gfx)
         {
             form.FramedEvents += BundleStatusChanged;
-            form.Controls.Add(hardwareLabel);
-            form.Controls.Add(algorythmLabel);
-            form.Controls.Add(hashrateLabel);
-            form.Controls.Add(ethdayLabel);
+            this.active = true;
+            this.AddToFormIfNotExist(hardwareLabel, form);
+            this.AddToFormIfNotExist(algorythmLabel, form);
+            this.AddToFormIfNotExist(hashrateLabel, form);
+            this.AddToFormIfNotExist(ethdayLabel, form);
             for(int i = 0; i < bundles.Count(); i++)
             {
                 int top = topMargin + secondLabelLine + hardwareFirstLineTopMargin + hardwareLineHeight * i+4;
@@ -279,19 +282,19 @@ namespace MinerGUI.Gui.Main.MainElements
             }
             foreach (Label l in bundlesPrefixes)
             {
-                form.Controls.Add(l);
+                this.AddToFormIfNotExist(l, form);
             }
             foreach (Label l in bundlesNames)
             {
-                form.Controls.Add(l);
+                this.AddToFormIfNotExist(l, form);
             }
             foreach (Label l in bundlesAlgos)
             {
-                form.Controls.Add(l);
+                this.AddToFormIfNotExist(l, form);
             }
             foreach (Label l in bundlesHashrates)
             {
-                form.Controls.Add(l);
+                this.AddToFormIfNotExist(l, form);
             }
             foreach (Label l in bundlesEst)
             {
@@ -305,6 +308,7 @@ namespace MinerGUI.Gui.Main.MainElements
 
         public override void Deactivate(FrameForm form, Graphics gfx)
         {
+            this.active = false;
             form.FramedEvents -= BundleStatusChanged;
             form.Controls.Remove(hardwareLabel);
             form.Controls.Remove(algorythmLabel);
@@ -312,23 +316,23 @@ namespace MinerGUI.Gui.Main.MainElements
             form.Controls.Remove(ethdayLabel);
             foreach (Label l in bundlesPrefixes)
             {
-                form.Controls.Remove(l);
+                this.RemoveFromFormIfExist(l, form);
             }
             foreach (Label l in bundlesNames)
             {
-                form.Controls.Remove(l);
+                this.RemoveFromFormIfExist(l, form);
             }
             foreach (Label l in bundlesAlgos)
             {
-                form.Controls.Remove(l);
+                this.RemoveFromFormIfExist(l, form);
             }
             foreach (Label l in bundlesHashrates)
             {
-                form.Controls.Remove(l);
+                this.RemoveFromFormIfExist(l, form);
             }
             foreach (Label l in bundlesEst)
             {
-                form.Controls.Remove(l);
+                this.RemoveFromFormIfExist(l, form);
             }
             for (int i = 0; i < bundles.Count(); i++)
             {
@@ -338,6 +342,85 @@ namespace MinerGUI.Gui.Main.MainElements
             foreach (GlobalMouseClickEventHander e in bundleStartPauseEvents)
             {
                 form.GlobalMouseClick -= e;
+            }
+        }
+
+        public override void Draw(FrameForm form, Graphics gfx)
+        {
+            if(active)
+            {
+
+                this.AddToFormIfNotExist(hardwareLabel, form);
+                this.AddToFormIfNotExist(algorythmLabel, form);
+                this.AddToFormIfNotExist(hashrateLabel, form);
+                this.AddToFormIfNotExist(ethdayLabel, form);
+                for (int i = 0; i < bundles.Count(); i++)
+                {
+                    int top = topMargin + secondLabelLine + hardwareFirstLineTopMargin + hardwareLineHeight * i + 4;
+                    this.DrawRoundedRectangle(gfx, new Rectangle(MainFrame.LeftPadding + 19, top, 510, 40), 20, new Pen(Color.FromArgb(255, 69, 79, 93), 1), Color.FromArgb(255, 46, 53, 62));
+                    if (bundles[i].IsMining())
+                    {
+                        this.DrawPause(gfx, new Rectangle(MainFrame.LeftPadding + 19 + 23, top + 12, 16, 16));
+                    }
+                    else
+                    {
+                        this.DrawPlay(gfx, new Rectangle(MainFrame.LeftPadding + 19 + 23, top + 12, 16, 16));
+                    }
+                }
+                for (int i = 0; i < bundles.Count(); i++)
+                {
+                }
+                foreach (Label l in bundlesPrefixes)
+                {
+                    this.AddToFormIfNotExist(l, form);
+                }
+                foreach (Label l in bundlesNames)
+                {
+                    this.AddToFormIfNotExist(l, form);
+                }
+                foreach (Label l in bundlesAlgos)
+                {
+                    this.AddToFormIfNotExist(l, form);
+                }
+                foreach (Label l in bundlesHashrates)
+                {
+                    this.AddToFormIfNotExist(l, form);
+                }
+                foreach (Label l in bundlesEst)
+                {
+                    form.Controls.Add(l);
+                }
+            } else
+            {
+                form.Controls.Remove(hardwareLabel);
+                form.Controls.Remove(algorythmLabel);
+                form.Controls.Remove(hashrateLabel);
+                form.Controls.Remove(ethdayLabel);
+                foreach (Label l in bundlesPrefixes)
+                {
+                    this.RemoveFromFormIfExist(l, form);
+                }
+                foreach (Label l in bundlesNames)
+                {
+                    this.RemoveFromFormIfExist(l, form);
+                }
+                foreach (Label l in bundlesAlgos)
+                {
+                    this.RemoveFromFormIfExist(l, form);
+                }
+                foreach (Label l in bundlesHashrates)
+                {
+                    this.RemoveFromFormIfExist(l, form);
+                }
+                foreach (Label l in bundlesEst)
+                {
+                    this.RemoveFromFormIfExist(l, form);
+                }
+                for (int i = 0; i < bundles.Count(); i++)
+                {
+                    int top = topMargin + secondLabelLine + hardwareFirstLineTopMargin + hardwareLineHeight * i + 4;
+                    this.DrawRectangle(gfx, new Rectangle(MainFrame.LeftPadding + 19, top, 510, 40), MainFrame.BackgroundColor);
+                }
             }
         }
     }

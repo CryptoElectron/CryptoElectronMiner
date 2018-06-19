@@ -23,5 +23,10 @@ namespace MinerGUI.Gui.Main.MainElements
         {
 
         }
+
+        public override void Draw(FrameForm form, Graphics gfx)
+        {
+            
+        }
     }
 }

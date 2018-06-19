@@ -14,6 +14,7 @@ namespace MinerGUI.Gui.Main
     class HardwareContent : FrameContent
     {
         private FramedEventHandler BundlesLoaded;
+        private bool active;
 
         const int topMargin = 20;
         int leftMargin = 394 + MainFrame.LeftPadding;
@@ -49,14 +50,27 @@ namespace MinerGUI.Gui.Main
 
         public override void Activate(FrameForm form, Graphics gfx)
         {
-            form.Controls.Add(advancedMiningLabel);
+            active = true;
+            this.AddToFormIfNotExist(advancedMiningLabel, form);
             this.ActivateChildContent(form, gfx);
         }
 
         public override void Deactivate(FrameForm form, Graphics gfx)
         {
-            form.Controls.Remove(advancedMiningLabel);
+            active = false;
+            this.RemoveFromFormIfExist(advancedMiningLabel, form);
             this.DeactivateChildContent(form, gfx);
+        }
+
+        public override void Draw(FrameForm form, Graphics gfx)
+        {
+            if(active)
+            {
+                this.AddToFormIfNotExist(advancedMiningLabel, form);
+            } else
+            {
+                this.RemoveFromFormIfExist(advancedMiningLabel, form);
+            }
         }
     }
 }

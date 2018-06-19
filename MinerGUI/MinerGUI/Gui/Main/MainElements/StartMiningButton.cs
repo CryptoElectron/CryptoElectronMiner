@@ -12,6 +12,7 @@ namespace MinerGUI.Gui.Main.MainElements
 {
     class StartMiningButton : FrameContent
     {
+        private bool active;
 
         private FramedEventHandler BundleStatusChanged;
         private FramedEventHandler BundleStatusChangedHidden;
@@ -126,10 +127,11 @@ namespace MinerGUI.Gui.Main.MainElements
 
         public override void Activate(FrameForm form, Graphics gfx)
         {
+            this.active = true;
             form.FramedEvents -= BundleStatusChangedHidden;
             form.FramedEvents += BundleStatusChanged;
             form.GlobalMouseClick += globalMouseClickEventHander;
-            form.Controls.Add(statusLabel);
+            this.AddToFormIfNotExist(statusLabel, form);
             this.DrawRoundedRectangle(gfx, buttonRectangle, 5, new Pen(Color.FromArgb(255, 31, 214, 208), 2), buttonBackground);
             if(mining)
             {
@@ -142,11 +144,11 @@ namespace MinerGUI.Gui.Main.MainElements
 
         public override void Deactivate(FrameForm form, Graphics gfx)
         {
-
+            this.active = false;
             form.FramedEvents -= BundleStatusChanged;
             form.FramedEvents += BundleStatusChangedHidden;
             form.GlobalMouseClick -= globalMouseClickEventHander;
-            form.Controls.Remove(statusLabel);
+            this.RemoveFromFormIfExist(statusLabel, form);
             this.DrawRectangle(gfx, buttonRectangle, MainFrame.BackgroundColor);
         }
 
@@ -159,11 +161,32 @@ namespace MinerGUI.Gui.Main.MainElements
                     return true;
                 }
             }
-            return false ;
+            return false;
         }
         private void ClearPlayPause(Graphics gfx, Rectangle r, Color c)
         {
             this.DrawRectangle(gfx, this.GetIncreasedRectangle(r, 2), c);
+        }
+
+        public override void Draw(FrameForm form, Graphics gfx)
+        {
+            if(active)
+            {
+                this.AddToFormIfNotExist(statusLabel, form);
+                this.DrawRoundedRectangle(gfx, buttonRectangle, 5, new Pen(Color.FromArgb(255, 31, 214, 208), 2), buttonBackground);
+                if (mining)
+                {
+                    this.DrawPause(gfx, playPauseButtonRectangle);
+                }
+                else
+                {
+                    this.DrawPlay(gfx, playPauseButtonRectangle);
+                }
+            } else
+            {
+                this.RemoveFromFormIfExist(statusLabel, form);
+                this.DrawRectangle(gfx, buttonRectangle, MainFrame.BackgroundColor);
+            }
         }
     }
 }

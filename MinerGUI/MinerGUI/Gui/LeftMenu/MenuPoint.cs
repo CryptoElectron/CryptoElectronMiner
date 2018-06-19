@@ -70,7 +70,12 @@ namespace MinerGUI.Gui.LeftMenu
                 {
                     form.Controls.Remove(pointDarkPicture);
                 }
-                form.Controls.Add(pointLightPicture);
+                if (!form.Controls.Contains(pointLightPicture))
+                {
+                    form.Controls.Add(pointLightPicture);
+                }
+                this.frameContent.DrawContent(form, graphics);
+
             } else
             {
                 graphics.FillRectangle(menuNonactiveLine, menuActiveRectangle);
@@ -78,7 +83,10 @@ namespace MinerGUI.Gui.LeftMenu
                 {
                     form.Controls.Remove(pointLightPicture);
                 }
-                form.Controls.Add(pointDarkPicture);
+                if (!form.Controls.Contains(pointDarkPicture))
+                {
+                    form.Controls.Add(pointDarkPicture);
+                }
             }
         }
 

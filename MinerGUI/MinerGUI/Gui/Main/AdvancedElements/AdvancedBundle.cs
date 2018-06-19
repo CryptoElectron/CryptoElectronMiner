@@ -12,6 +12,8 @@ namespace MinerGUI.Gui.Main.AdvancedElements
 {
     class AdvancedBundle : FrameContent
     {
+        private bool active = false;
+
         private FramedEventHandler BundleStatusChanged;
         private GlobalMouseClickEventHander globalMouseClickEventHander;
 
@@ -97,13 +99,14 @@ namespace MinerGUI.Gui.Main.AdvancedElements
         }
 
         public override void Activate(FrameForm form, Graphics gfx)
-        {
+        { 
+
+            active = true;
             form.GlobalMouseClick += globalMouseClickEventHander;
             form.FramedEvents += BundleStatusChanged;
-
             this.DrawRoundedRectangle(gfx, bundleRectangle, 20, new Pen(Color.FromArgb(255, 69, 79, 93), 1), Color.FromArgb(255, 46, 53, 62));
-            form.Controls.Add(bundlePrefix);
-            form.Controls.Add(bundleName);
+            this.AddToFormIfNotExist(bundlePrefix, form);
+            this.AddToFormIfNotExist(bundleName, form);
 
             if (bundle.IsMining())
             {
@@ -117,13 +120,39 @@ namespace MinerGUI.Gui.Main.AdvancedElements
 
         public override void Deactivate(FrameForm form, Graphics gfx)
         {
+            active = false;
             form.GlobalMouseClick -= globalMouseClickEventHander;
             form.FramedEvents -= BundleStatusChanged;
 
             this.DrawRectangle(gfx, bundleRectangle, MainFrame.BackgroundColor);
-            form.Controls.Remove(bundlePrefix);
-            form.Controls.Remove(bundleName);
+            this.RemoveFromFormIfExist(bundlePrefix, form);
+            this.RemoveFromFormIfExist(bundleName, form);
             this.DrawRectangle(gfx, new Rectangle(MainFrame.LeftPadding + paddingLeft + playPauseLeftPadding, topMargin + playPauseTopPadding, 510, 40), MainFrame.BackgroundColor);
+        }
+
+        public override void Draw(FrameForm form, Graphics gfx)
+        {
+            if(active)
+            {
+
+                this.DrawRoundedRectangle(gfx, bundleRectangle, 20, new Pen(Color.FromArgb(255, 69, 79, 93), 1), Color.FromArgb(255, 46, 53, 62));
+                if (bundle.IsMining())
+                {
+                    this.DrawPause(gfx, playPauseRectangle);
+                }
+                else
+                {
+                    this.DrawPlay(gfx, playPauseRectangle);
+                }
+                this.AddToFormIfNotExist(bundlePrefix, form);
+                this.AddToFormIfNotExist(bundleName, form);
+            } else
+            {
+                this.RemoveFromFormIfExist(bundlePrefix, form);
+                this.RemoveFromFormIfExist(bundleName, form);
+                this.DrawRectangle(gfx, bundleRectangle, MainFrame.BackgroundColor);
+                this.DrawRectangle(gfx, new Rectangle(MainFrame.LeftPadding + paddingLeft + playPauseLeftPadding, topMargin + playPauseTopPadding, 510, 40), MainFrame.BackgroundColor);
+            }
         }
     }
 }

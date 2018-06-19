@@ -13,6 +13,8 @@ namespace MinerGUI.Gui.Main
 {
     class MainContent : FrameContent
     {
+        private bool active;
+
         const int topMargin = 22;
         int leftMargin = 440+ MainFrame.LeftPadding;
 
@@ -37,14 +39,27 @@ namespace MinerGUI.Gui.Main
 
         public override void Activate(FrameForm form, Graphics gfx)
         {
-            form.Controls.Add(miningLabel);
+            active = true;
+            this.AddToFormIfNotExist(miningLabel, form);
             this.ActivateChildContent(form, gfx);
         }
 
         public override void Deactivate(FrameForm form, Graphics gfx)
         {
-            form.Controls.Remove(miningLabel);
+            active = false;
+            this.AddToFormIfNotExist(miningLabel, form);
             this.DeactivateChildContent(form, gfx);
+        }
+
+        public override void Draw(FrameForm form, Graphics gfx)
+        {
+            if(active)
+            {
+                this.AddToFormIfNotExist(miningLabel, form);
+            } else
+            {
+                this.RemoveFromFormIfExist(miningLabel, form);
+            }
         }
     }
 }

@@ -16,6 +16,8 @@ using System.Drawing.Drawing2D;
 using MinerGUI.Gui;
 using MinerGUI.Gui.Form;
 using MinerGUI.Bundles;
+using MinerGUI.Subprocess;
+using SlavaGu.ConsoleAppLauncher;
 
 namespace MinerGUI
 {
@@ -23,22 +25,52 @@ namespace MinerGUI
     public partial class Form1 : FrameForm
     {
 
+
         MainFrame mainFrame;
         bool firstDraw = true;
+        List<Task<bool>> paintings = new List<Task<bool>>();
 
         public Form1() : base()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.SetStyle(
+                  ControlStyles.AllPaintingInWmPaint |
+                  ControlStyles.UserPaint |
+                  ControlStyles.DoubleBuffer, true);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            base.OnPaint(e);
             mainFrame.Draw(this, e.Graphics, firstDraw);
             firstDraw = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            
+            ManagementObjectSearcher objvide = new ManagementObjectSearcher("select * from Win32_VideoController");
+
+            Dictionary<String, Int32> gpus = new Dictionary<string, Int32>();
+            foreach (ManagementObject obj in objvide.Get())
+            {
+                String gpuName = obj["Name"].ToString().Trim();
+                if (gpus.ContainsKey(gpuName))
+                {
+                    gpus[gpuName] = gpus[gpuName] + 1;
+                }
+                else
+                {
+                    gpus[gpuName] = 1;
+                }
+                
+            }
+
+
+
+
             List<Bundle> bundles = new List<Bundle>();
             mainFrame = new MainFrame(this, bundles);
             GlobalMouseClick += (o, i) =>
@@ -58,21 +90,36 @@ namespace MinerGUI
                 gfx.Dispose();
             };
             Random rnd = new Random();
-            ManagementObjectSearcher mos =
-              new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
+            ManagementObjectSearcher mos = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM Win32_Processor");
             foreach (ManagementObject mo in mos.Get())
             {
+                String cpuName = mo["Name"].ToString().Trim();
                 double es = rnd.NextDouble() / 100f;
-                bundles.Add(new Bundle(mo["Name"].ToString(), new Gui.Bundles.Algo("CryptoNight", "h/s"), rnd.NextDouble() * 999, es, 0));
+                bundles.Add(new Bundle(cpuName, new Gui.Bundles.Algo("CryptoNight", "h/s"), rnd.NextDouble() * 999, es, 0));
             }
-            for (int a = 0; a < 2; a++)
+
+
+            foreach (KeyValuePair<string, Int32> entry in gpus)
             {
-                bundles.Add(Bundle.getRandomBundle(rnd));
+                String extra = "";
+                if (entry.Value != 1)
+                {
+                    extra = entry.Value + "x ";
+                }
+                double es = rnd.NextDouble() / 100f;
+                bundles.Add(new Bundle(extra + entry.Key, new Gui.Bundles.Algo("CryptoNight", "h/s"), rnd.NextDouble() * 999, es, 0));
             }
+
+            /*new Thread(delegate ()
+            {
+                CryptoElectronMaster.Auth(this, bundles);
+            }).Start();*/
+
+            this.FireFrameEvent("BundlesLoaded", bundles);
+
             FrameForm s = this;
             Thread t = new Thread(delegate ()
             {
-                s.Invoke((MethodInvoker)(() => { this.FireFrameEvent("BundlesLoaded", bundles); }));
                 while (true)
                 {
                     try
@@ -106,21 +153,29 @@ namespace MinerGUI
             String pathToEthminer = "C:\\Users\\aki\\Desktop\\mining\\ethminer\\ethminer.exe";
             MinerExecutable.Clear("Ethash");
             String pathToExecutable = MinerExecutable.Build("Ethash", pathToEthminer, args, false);
+
             //MessageBox.Show();
             Process p = new Process();
             p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardOutput = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.FileName = Path.GetFullPath(pathToExecutable);
+            p.Start();
+            ChildProcessTracker.AddProcess(p);*/
+            String args = "--server";
+            String pathToEthminer = "C:\\Users\\aki\\Desktop\\mining\\ethminer\\ethminer.exe";
+            MinerExecutable.Clear("Ethash");
+            String pathToExecutable = MinerExecutable.Build("Ethash", pathToEthminer, args, false);
+
+            //MessageBox.Show();
+            Process p = new Process();
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.CreateNoWindow = true;
             p.StartInfo.FileName = Path.GetFullPath(pathToExecutable);
             p.Start();
             ChildProcessTracker.AddProcess(p);
             /*new Thread(delegate ()
-            {
-                while (true)
-                {
-                    label1.Invoke(new Action(() => { label1.Text = p.StandardOutput.ReadLine(); }));
-                }
-            }).Start();*
-            new Thread(delegate ()
             {
                 MessageBox.Show("p");
                 Thread.Sleep(1000);

@@ -62,6 +62,7 @@ namespace MinerGUI.Gui
 
         public void Draw(FrameForm form, Graphics graphics, bool firstRun)
         {
+            this.form.SuspendLayout();
             graphics.FillRectangle(leftMenuBackground, new Rectangle(0, logoHeight, menuWidth, 345));
             graphics.FillRectangle(logoMenuBackground, new Rectangle(0, 0, menuWidth, logoHeight));
 
@@ -76,7 +77,11 @@ namespace MinerGUI.Gui
             settingsMenuPoint.Draw(form, graphics);
             supportMenuPoint.Draw(form, graphics);
 
-            if (firstRun) this.ActivateNewMenuPoint(miningMenuPoint, form, graphics);
+            if (firstRun)
+            {
+                this.ActivateNewMenuPoint(miningMenuPoint, form, graphics);
+            }
+            this.form.ResumeLayout(true);
         }
 
         private void ActivateNewMenuPoint(MenuPoint menuPoint, FrameForm form, Graphics gfx)
@@ -100,6 +105,7 @@ namespace MinerGUI.Gui
             Assembly assembly = Assembly.GetExecutingAssembly();
 
             this.form = form;
+            this.form.SuspendLayout();
             leftMenuBackground = new System.Drawing.SolidBrush(leftMenuBackgroundColor);
             logoMenuBackground = new System.Drawing.SolidBrush(System.Drawing.Color.FromArgb(255, 33, 37, 43));
 
@@ -124,6 +130,7 @@ namespace MinerGUI.Gui
             menuPoints.Add(userMenuPoint);
             menuPoints.Add(settingsMenuPoint);
             menuPoints.Add(supportMenuPoint);
+            this.form.ResumeLayout(true);
         }
     }
 }

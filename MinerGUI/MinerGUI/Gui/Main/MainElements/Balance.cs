@@ -11,6 +11,8 @@ namespace MinerGUI.Gui.Main.MainElements
 {
     class Balance : FrameContent
     {
+        private bool active;
+
         private FramedEventHandler DailyEarningChanged;
 
         private Label yourBalance;
@@ -111,18 +113,37 @@ namespace MinerGUI.Gui.Main.MainElements
 
         public override void Activate(FrameForm form, Graphics gfx)
         {
-            form.Controls.Add(yourBalance);
-            form.Controls.Add(ethBalance);
-            form.Controls.Add(usdBalance);
+            this.active = true;
+            this.AddToFormIfNotExist(yourBalance, form);
+            this.AddToFormIfNotExist(ethBalance, form);
+            this.AddToFormIfNotExist(usdBalance, form);
             this.DrawRoundedRectangle(gfx, areaRectangle, 5, new Pen(Color.Transparent), areaBackgroundColor);
         }
 
         public override void Deactivate(FrameForm form, Graphics gfx)
         {
-            form.Controls.Remove(yourBalance);
-            form.Controls.Remove(ethBalance);
-            form.Controls.Remove(usdBalance);
+            this.active = false;
+            this.RemoveFromFormIfExist(yourBalance, form);
+            this.RemoveFromFormIfExist(ethBalance, form);
+            this.RemoveFromFormIfExist(usdBalance, form);
             this.DrawRectangle(gfx, areaRectangle, MainFrame.BackgroundColor);
+        }
+
+        public override void Draw(FrameForm form, Graphics gfx)
+        {
+            if(active)
+            {
+                this.AddToFormIfNotExist(yourBalance, form);
+                this.AddToFormIfNotExist(ethBalance, form);
+                this.AddToFormIfNotExist(usdBalance, form);
+                this.DrawRoundedRectangle(gfx, areaRectangle, 5, new Pen(Color.Transparent), areaBackgroundColor);
+            } else
+            {
+                this.RemoveFromFormIfExist(yourBalance, form);
+                this.RemoveFromFormIfExist(ethBalance, form);
+                this.RemoveFromFormIfExist(usdBalance, form);
+                this.DrawRectangle(gfx, areaRectangle, MainFrame.BackgroundColor);
+            }
         }
     }
 }

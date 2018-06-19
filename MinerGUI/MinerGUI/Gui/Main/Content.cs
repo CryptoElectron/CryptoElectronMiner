@@ -6,6 +6,7 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MinerGUI.Gui.Main
 {
@@ -37,6 +38,7 @@ namespace MinerGUI.Gui.Main
         }
         public abstract void Activate(FrameForm form, Graphics gfx);
         public abstract void Deactivate(FrameForm form, Graphics gfx);
+        public abstract void Draw(FrameForm form, Graphics gfx);
 
 
 
@@ -83,9 +85,33 @@ namespace MinerGUI.Gui.Main
             pal1.Dispose();
         }
 
+        internal void DrawContent(FrameForm form, Graphics graphics)
+        {
+            this.Draw(form, graphics);
+            foreach (FrameContent childContent in childContents)
+            {
+                childContent.DrawContent(form, graphics);
+            }
+        }
+
         public Rectangle GetIncreasedRectangle(Rectangle r, int px)
         {
             return new Rectangle(r.X - px, r.Y - px, r.Width + px*2, r.Height + px*2);
+        }
+
+        public void AddToFormIfNotExist(Control control, FrameForm form)
+        {
+            if (!form.Controls.Contains(control))
+            {
+                form.Controls.Add(control);
+            }
+        }
+        public void RemoveFromFormIfExist(Control control, FrameForm form)
+        {
+            if (form.Controls.Contains(control))
+            {
+                form.Controls.Remove(control);
+            }
         }
     }
 }
